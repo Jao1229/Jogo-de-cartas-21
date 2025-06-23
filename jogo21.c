@@ -14,7 +14,7 @@ typedef struct {
     Valor valor;
 } Carta;
 
-// Nodo da lista encadeada
+// Faz um nó da lista ou pilha encadeada
 typedef struct Nodo {
     Carta carta;
     struct Nodo* prox;
@@ -36,7 +36,7 @@ int LimparMao(Jogador *jogador);
 int ExibirMao(Jogador *jogador);
 int SalvarPlacar(const char *vencedor);
 int ExibirPlacar();
-int JogarRodada(Nodo **baralho, Jogador* j1, Jogador* j2);
+int JogarRodada(Nodo **baralho, Jogador *j1, Jogador *j2);
 int LiberarBaralho(Nodo *topo);
 
 int main() {
@@ -117,22 +117,25 @@ int Embaralhar(Nodo **topo) {
     if (topo == NULL || *topo == NULL) return -1;
 
     int tamanho = 0;
-    Nodo* temp = *topo;
+    Nodo *temp = *topo;
+    //Conta a quantidade de cartas no baralho
     while (temp) {
         tamanho++;
         temp = temp->prox;
     }
-    if (tamanho <= 1) return 0;
+    if (tamanho <= 1) return -1; //Observar
 
     Carta* cartas = (Carta*)malloc(tamanho * sizeof(Carta));
     if (cartas == NULL) return -1;
 
+    //Copia as cartas da lista encadeada gerada no começo para a estrutura carta 
     temp = *topo;
     for (int i = 0; i < tamanho; i++) {
         cartas[i] = temp->carta;
         temp = temp->prox;
     }
 
+    //Embaralha as cartas
     srand(time(NULL));
     for (int i = 0; i < tamanho; i++) {
         int j = rand() % tamanho;
@@ -141,6 +144,7 @@ int Embaralhar(Nodo **topo) {
         cartas[j] = tmp;
     }
 
+    //Troca o conteúdo do ponteiro topo mas não meche no encadeamento 
     temp = *topo;
     for (int i = 0; i < tamanho; i++) {
         temp->carta = cartas[i];
@@ -150,11 +154,11 @@ int Embaralhar(Nodo **topo) {
     return 0;
 }
 
-// Remover carta (com tratamento de erro)
+// Remover carta 
 int RemoverCarta(Nodo **topo, Carta *carta) {
     if (topo == NULL || *topo == NULL || carta == NULL) return -1;
 
-    Nodo* temp = *topo;
+    Nodo *temp = *topo;
     *carta = temp->carta;
     *topo = temp->prox;
     free(temp);
@@ -182,9 +186,9 @@ int AdicionarCartaNaMao(Jogador *jogador, Carta carta) {
 // Limpar mão
 int LimparMao(Jogador *jogador) {
     if (jogador == NULL) return -1;
-    Nodo* temp = jogador->mao;
+    Nodo *temp = jogador->mao;
     while (temp) {
-        Nodo* prox = temp->prox;
+        Nodo *prox = temp->prox;
         free(temp);
         temp = prox;
     }
@@ -196,9 +200,9 @@ int LimparMao(Jogador *jogador) {
 // Exibir mão
 int ExibirMao(Jogador *jogador) {
     if (jogador == NULL) return -1;
-    Nodo* atual = jogador->mao;
-    char* nomesNaipe[] = {"Copas", "Ouros", "Espadas", "Paus"};
-    char* nomesValor[] = {"", "As", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Valete", "Dama", "Rei"};
+    Nodo *atual = jogador->mao;
+    char *nomesNaipe[] = {"Copas", "Ouros", "Espadas", "Paus"};
+    char *nomesValor[] = {"", "As", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Valete", "Dama", "Rei"};
 
     while (atual != NULL) {
         printf("%s de %s\n", nomesValor[atual->carta.valor], nomesNaipe[atual->carta.naipe]);
@@ -231,14 +235,14 @@ int ExibirPlacar() {
     return 0;
 }
 
-// Jogar rodada (corrigido)
-int JogarRodada(Nodo **baralho, Jogador* j1, Jogador* j2) {
+// Jogar rodada 
+int JogarRodada(Nodo **baralho, Jogador *j1, Jogador *j2) {
     if (baralho == NULL || *baralho == NULL || j1 == NULL || j2 == NULL) return -1;
 
     if (LimparMao(j1) != 0 || LimparMao(j2) != 0) return -1;
 
     Carta c;
-
+    //Vai remover a carta do topo do baralho e colocar na mão do jogador
     for (int i = 0; i < 2; i++) {
         if (RemoverCarta(baralho, &c) != 0) return -1;
         if (AdicionarCartaNaMao(j1, c) != 0) return -1;
@@ -310,6 +314,7 @@ int JogarRodada(Nodo **baralho, Jogador* j1, Jogador* j2) {
         SalvarPlacar(j2->nome);
     }
 
+    //Develve as cartas da mão do jogador para o topo do baralho
     Nodo *temp;
     while (j1->mao) {
         temp = j1->mao;
