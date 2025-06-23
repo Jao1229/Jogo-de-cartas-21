@@ -5,7 +5,7 @@ O jogo tem como objetivo um dos jogadores chegar próximo ou bater 21.
 
 ## Regras básicas:
 
-* Todos os jogadores no início de cada rodada receberão 2 castas com valores aleatórios, que serão somados entre si.
+* Todos os jogadores no início de cada rodada receberão 2 cartas com valores aleatórios, que serão somados entre si.
   
 * Cada jogador terá a possibilidade de receber mais uma carta ou não.
   
